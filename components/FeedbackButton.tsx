@@ -2,7 +2,7 @@ import styles from "./FeedbackButton.module.css";
 
 const mailTo = (() => {
   const subject = encodeURIComponent("InvoiceNow Feedback");
-  return `mailto:feedback@sephan.co.ke?subject=${subject}`;
+  return `mailto:services@sephanly.com?subject=${subject}`;
 })();
 
 const MailIcon = () => (
