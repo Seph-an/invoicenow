@@ -7,7 +7,8 @@ export function Footer() {
     <footer className={styles.footer}>
       © {currentYear} All rights reserved | By{" "}
       <a href="https://dev.sephan.co.ke" target="_blank" rel="noreferrer">
-        dev.sephan.co.ke
+        <span>Sephanly</span>
+        <span className={styles.domain}>dev.sephan.co.ke</span>
       </a>
     </footer>
   );
