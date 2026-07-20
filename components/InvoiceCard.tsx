@@ -12,133 +12,47 @@ import {
   useState
 } from "react";
 import styles from "./InvoiceCard.module.css";
+import { TextField } from "./invoice/TextField";
+import { calculateTotals, clampPercentage } from "@/features/invoice/calculations";
+import {
+  currencyOptions,
+  DEFAULT_CURRENCY,
+  getCurrencyFormatter,
+  isSupportedCurrency,
+  type CurrencyCode
+} from "@/features/invoice/currencies";
+import { createItem, getDefaultClientInfo, getDefaultCompanyInfo } from "@/features/invoice/defaults";
+import {
+  DOCUMENT_NUMBER_FALLBACK,
+  formatDocumentNumber,
+  getDocumentLabels
+} from "@/features/invoice/document-number";
+import type {
+  ClientInfo,
+  CompanyInfo,
+  DocumentType,
+  InvoiceDraft as PersistedState,
+  InvoiceItem
+} from "@/features/invoice/types";
+import {
+  normalizeClientInfo,
+  normalizeCompanyInfo,
+  normalizeItems,
+  toPositiveNumber
+} from "@/features/invoice/validation";
 
 const STORAGE_KEY = "invoice-card-state";
 const RESET_EVENT_NAME = "invoice-card:reset";
 const DOWNLOAD_EVENT_NAME = "invoice-card:download";
 const PREVIEW_EVENT_NAME = "invoice-card:preview";
-const DEFAULT_CURRENCY = "USD" as const;
-
-type InvoiceItem = {
-  id: string;
-  description: string;
-  quantity: number;
-  rate: number;
-};
-
-type CompanyInfo = {
-  name: string;
-  address: string;
-  email: string;
-  invoiceNumber: string;
-};
-
-type ClientInfo = {
-  name: string;
-  address: string;
-  email: string;
-  date: string;
-  dueDate: string;
-};
-
-const currencyOptions = [
-  { value: "USD", label: "USD - US Dollar", locale: "en-US" },
-  { value: "EUR", label: "EUR - Euro", locale: "de-DE" },
-  { value: "GBP", label: "GBP - British Pound", locale: "en-GB" },
-  { value: "CNY", label: "CNY - Chinese Yuan", locale: "zh-CN" },
-  { value: "NGN", label: "NGN - Nigerian Naira", locale: "en-NG" },
-  { value: "KES", label: "KES - Kenyan Shilling", locale: "en-KE" },
-  { value: "ZAR", label: "ZAR - South African Rand", locale: "en-ZA" },
-  { value: "EGP", label: "EGP - Egyptian Pound", locale: "ar-EG" },
-  { value: "MAD", label: "MAD - Moroccan Dirham", locale: "fr-MA" },
-  { value: "GHS", label: "GHS - Ghanaian Cedi", locale: "en-GH" },
-  { value: "TZS", label: "TZS - Tanzanian Shilling", locale: "sw-TZ" },
-  { value: "UGX", label: "UGX - Ugandan Shilling", locale: "en-UG" },
-  { value: "DZD", label: "DZD - Algerian Dinar", locale: "ar-DZ" },
-  { value: "TND", label: "TND - Tunisian Dinar", locale: "fr-TN" },
-  { value: "SDG", label: "SDG - Sudanese Pound", locale: "ar-SD" },
-  { value: "AOA", label: "AOA - Angolan Kwanza", locale: "pt-AO" },
-  { value: "ETB", label: "ETB - Ethiopian Birr", locale: "am-ET" },
-  { value: "XAF", label: "XAF - Central African CFA Franc", locale: "fr-CM" },
-  { value: "XOF", label: "XOF - West African CFA Franc", locale: "fr-SN" },
-  { value: "BWP", label: "BWP - Botswanan Pula", locale: "en-BW" },
-  { value: "MUR", label: "MUR - Mauritian Rupee", locale: "en-MU" },
-  { value: "MWK", label: "MWK - Malawian Kwacha", locale: "en-MW" },
-  { value: "LRD", label: "LRD - Liberian Dollar", locale: "en-LR" },
-  { value: "RWF", label: "RWF - Rwandan Franc", locale: "rw-RW" }
-] as const;
-
-type CurrencyCode = (typeof currencyOptions)[number]["value"];
-
-type DocumentType = "invoice" | "quotation";
-
-type PersistedState = {
-  currency: CurrencyCode;
-  logo: string | null;
-  documentType: DocumentType;
-  companyInfo: CompanyInfo;
-  clientInfo: ClientInfo;
-  paymentTermsEnabled: boolean;
-  paymentTerms: string;
-  notesEnabled: boolean;
-  notes: string;
-  items: InvoiceItem[];
-  taxPercent: number;
-  discountEnabled: boolean;
-  discountPercent: number;
-};
 
 const documentTypeOptions: { value: DocumentType; label: string }[] = [
   { value: "invoice", label: "Generate invoice" },
   { value: "quotation", label: "Generate quotation" }
 ];
 
-const DOCUMENT_NUMBER_FALLBACK = "-0001";
-
-const getDocumentPrefix = (type: DocumentType) => (type === "quotation" ? "QTN" : "INV");
-
-const extractDocumentNumberSuffix = (value: string | null | undefined) => {
-  if (!value) return DOCUMENT_NUMBER_FALLBACK;
-  const trimmed = value.trim();
-  if (!trimmed) return DOCUMENT_NUMBER_FALLBACK;
-  const match = trimmed.match(/^(?:INV|QTN)(.*)$/i);
-  if (match) {
-    return match[1] || DOCUMENT_NUMBER_FALLBACK;
-  }
-  return trimmed.startsWith("-") ? trimmed : `-${trimmed}`;
-};
-
-const formatDocumentNumber = (value: string | null | undefined, type: DocumentType) => {
-  const suffix = extractDocumentNumberSuffix(value);
-  const formattedSuffix = suffix || DOCUMENT_NUMBER_FALLBACK;
-  return `${getDocumentPrefix(type)}${formattedSuffix}`;
-};
-
-const toIsoDate = (date: Date) => date.toISOString().slice(0, 10);
-
-function getDefaultCompanyInfo(): CompanyInfo {
-  return {
-    name: "Your Company",
-    address: "Your business address",
-    email: "your@email.com",
-    invoiceNumber: "INV-0001"
-  };
-}
-
-function getDefaultClientInfo(): ClientInfo {
-  const now = new Date();
-  const due = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-  return {
-    name: "Client Company",
-    address: "Client address",
-    email: "client@email.com",
-    date: toIsoDate(now),
-    dueDate: toIsoDate(due)
-  };
-}
-
 function createDefaultItems(): InvoiceItem[] {
-  return [createItem()];
+  return [createItem("initial-item")];
 }
 
 export function InvoiceCard() {
@@ -188,6 +102,7 @@ export function InvoiceCard() {
     setDiscountPercent(0);
   }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- This effect hydrates React from browser storage. */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -258,14 +173,16 @@ export function InvoiceCard() {
       setHasLoaded(true);
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
-  useEffect(() => {
+  const handleDocumentTypeChange = (nextType: DocumentType) => {
+    setDocumentType(nextType);
     setCompanyInfo((current) => {
-      const formatted = formatDocumentNumber(current.invoiceNumber, documentType);
+      const formatted = formatDocumentNumber(current.invoiceNumber, nextType);
       if (current.invoiceNumber === formatted) return current;
       return { ...current, invoiceNumber: formatted };
     });
-  }, [documentType]);
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -286,6 +203,7 @@ export function InvoiceCard() {
     }
 
     const state: PersistedState = {
+      version: 1,
       currency,
       logo,
       documentType,
@@ -301,11 +219,15 @@ export function InvoiceCard() {
       discountPercent
     };
 
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.warn("Unable to persist invoice state:", error);
-    }
+    const saveTimer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.warn("Unable to persist invoice state:", error);
+      }
+    }, 400);
+
+    return () => window.clearTimeout(saveTimer);
   }, [
     hasLoaded,
     currency,
@@ -324,24 +246,13 @@ export function InvoiceCard() {
   ]);
 
   const numberFormatter = useMemo(() => {
-    const option = currencyOptions.find((opt) => opt.value === currency) ?? currencyOptions[0];
-    return new Intl.NumberFormat(option.locale, {
-      style: "currency",
-      currency: option.value,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    return getCurrencyFormatter(currency);
   }, [currency]);
 
-  const subtotal = useMemo(
-    () => items.reduce((sum, item) => sum + item.quantity * item.rate, 0),
-    [items]
+  const { subtotal, discountAmount, taxAmount, total } = useMemo(
+    () => calculateTotals(items, currency, discountEnabled ? discountPercent : 0, taxPercent),
+    [currency, discountEnabled, discountPercent, items, taxPercent]
   );
-
-  const discountAmount = discountEnabled ? subtotal * (discountPercent / 100) : 0;
-  const taxable = Math.max(subtotal - discountAmount, 0);
-  const taxAmount = taxable * (taxPercent / 100);
-  const total = taxable + taxAmount;
 
   const handleDownload = useCallback(async (mode: "download" | "preview" = "download") => {
     if (typeof window === "undefined") {
@@ -351,7 +262,13 @@ export function InvoiceCard() {
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const margin = 14;
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     let y = margin;
+    const ensurePageSpace = (height: number) => {
+      if (y + height <= pageHeight - margin) return;
+      doc.addPage();
+      y = margin;
+    };
 
     if (logo) {
       const format = getImageFormat(logo);
@@ -373,16 +290,19 @@ export function InvoiceCard() {
       }
     }
 
-    const invoiceTitle = companyInfo.name?.trim() || "Invoice";
+    const labels = getDocumentLabels(documentType);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text(invoiceTitle, margin, y);
+    doc.text(labels.heading, margin, y);
+
+    doc.setFontSize(12);
+    doc.text(companyInfo.name?.trim() || labels.noun, margin, y + 7);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
-    y += 8;
-    doc.text(`Invoice Number: ${companyInfo.invoiceNumber || "N/A"}`, margin, y);
+    y += 14;
+    doc.text(`${labels.numberLabel}: ${companyInfo.invoiceNumber || "N/A"}`, margin, y);
     y += 6;
     doc.setFont("helvetica", "bold");
     doc.text(`Date:`, margin, y);
@@ -427,10 +347,13 @@ export function InvoiceCard() {
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      const termsLines = doc.splitTextToSize(paymentTerms.trim(), pageWidth - margin * 2);
-      doc.text(termsLines, margin, y);
-      const termsHeight = termsLines.length * getLineHeightMm(doc);
-      y += termsHeight + 12;
+      const termsLines: string[] = doc.splitTextToSize(paymentTerms.trim(), pageWidth - margin * 2);
+      for (const line of termsLines) {
+        ensurePageSpace(getLineHeightMm(doc));
+        doc.text(line, margin, y);
+        y += getLineHeightMm(doc);
+      }
+      y += 12;
     } else {
       y += 12;
     }
@@ -499,6 +422,7 @@ export function InvoiceCard() {
       bold: true
     });
 
+    ensurePageSpace(summaryRows.length * 6 + (notesEnabled && notes.trim() ? 24 : 0));
     doc.setFontSize(11);
     summaryRows.forEach((row) => {
       doc.setFont("helvetica", row.bold ? "bold" : "normal");
@@ -509,24 +433,30 @@ export function InvoiceCard() {
 
     if (notesEnabled && notes.trim()) {
       y += 6;
+      ensurePageSpace(18);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.text("Notes", margin, y);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      const noteLines = doc.splitTextToSize(notes.trim(), pageWidth - margin * 2);
+      const noteLines: string[] = doc.splitTextToSize(notes.trim(), pageWidth - margin * 2);
       y += 6;
-      doc.text(noteLines, margin, y);
-      y += getTextBlockHeight(doc, noteLines) + 4;
+      for (const line of noteLines) {
+        ensurePageSpace(getLineHeightMm(doc));
+        doc.text(line, margin, y);
+        y += getLineHeightMm(doc);
+      }
     }
 
     const fileNameBase = sanitizeFileName(
-      companyInfo.invoiceNumber || companyInfo.name || "invoice"
+      companyInfo.invoiceNumber || companyInfo.name || labels.fileFallback
     );
 
     if (mode === "preview") {
       const blobUrl = doc.output("bloburl");
-      window.open(blobUrl, "_blank", "noopener,noreferrer");
+      const blobUrlString = blobUrl.toString();
+      window.open(blobUrlString, "_blank", "noopener,noreferrer");
+      window.setTimeout(() => URL.revokeObjectURL(blobUrlString), 60_000);
     } else {
       doc.save(`${fileNameBase}.pdf`);
     }
@@ -547,6 +477,7 @@ export function InvoiceCard() {
     taxAmount,
     taxPercent,
     total
+    ,documentType
   ]);
 
   useEffect(() => {
@@ -579,6 +510,16 @@ export function InvoiceCard() {
         setLogo(reader.result);
       }
     };
+    if (!/^image\/(png|jpeg)$/.test(file.type)) {
+      window.alert("Please choose a PNG or JPEG logo so it can be included in the PDF.");
+      event.target.value = "";
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      window.alert("Please choose a logo smaller than 2 MB.");
+      event.target.value = "";
+      return;
+    }
     reader.readAsDataURL(file);
   };
 
@@ -634,7 +575,7 @@ export function InvoiceCard() {
                   name="document-type"
                   value={option.value}
                   checked={documentType === option.value}
-                  onChange={() => setDocumentType(option.value)}
+                  onChange={() => handleDocumentTypeChange(option.value)}
                 />
                 <span>{option.label}</span>
               </label>
@@ -690,7 +631,7 @@ export function InvoiceCard() {
             ref={fileInputRef}
             id="logo-input"
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg"
             className="sr-only"
             onChange={handleLogoChange}
           />
@@ -955,7 +896,7 @@ export function InvoiceCard() {
                   step={0.5}
                   value={discountPercent}
                   onChange={(event) =>
-                    setDiscountPercent(toPositiveNumber(event.target.value, discountPercent))
+                    setDiscountPercent(clampPercentage(toPositiveNumber(event.target.value, discountPercent)))
                   }
                 />
               </div>
@@ -988,7 +929,7 @@ export function InvoiceCard() {
                 max={100}
                 step={0.5}
                 value={taxPercent}
-                onChange={(event) => setTaxPercent(toPositiveNumber(event.target.value, taxPercent))}
+                onChange={(event) => setTaxPercent(clampPercentage(toPositiveNumber(event.target.value, taxPercent)))}
               />
             </div>
 
@@ -1008,134 +949,6 @@ export function InvoiceCard() {
       </form>
     </section>
   );
-}
-
-type TextFieldProps = {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-  multiline?: boolean;
-  placeholder?: string;
-  autoComplete?: string;
-};
-
-function TextField({
-  id,
-  label,
-  value,
-  onChange,
-  type = "text",
-  multiline = false,
-  placeholder,
-  autoComplete
-}: TextFieldProps) {
-  return (
-    <label htmlFor={id} className={styles.field}>
-      <span className={styles.label}>{label}</span>
-      {multiline ? (
-        <textarea
-          id={id}
-          className={`${styles.input} ${styles.textarea}`}
-          rows={3}
-          value={value}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      ) : (
-        <input
-          id={id}
-          className={styles.input}
-          type={type}
-          value={value}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      )}
-    </label>
-  );
-}
-
-function createItem(): InvoiceItem {
-  const id =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2);
-  return {
-    id,
-    description: "",
-    quantity: 1,
-    rate: 0
-  };
-}
-
-function isSupportedCurrency(value: string): value is (typeof currencyOptions)[number]["value"] {
-  return currencyOptions.some((option) => option.value === value);
-}
-
-function normalizeCompanyInfo(raw: unknown, fallback: CompanyInfo): CompanyInfo {
-  if (!raw || typeof raw !== "object") {
-    return { ...fallback };
-  }
-
-  const source = raw as Partial<CompanyInfo>;
-  return {
-    name: typeof source.name === "string" ? source.name : fallback.name,
-    address: typeof source.address === "string" ? source.address : fallback.address,
-    email: typeof source.email === "string" ? source.email : fallback.email,
-    invoiceNumber:
-      typeof source.invoiceNumber === "string" ? source.invoiceNumber : fallback.invoiceNumber
-  };
-}
-
-function normalizeClientInfo(raw: unknown, fallback: ClientInfo): ClientInfo {
-  if (!raw || typeof raw !== "object") {
-    return { ...fallback };
-  }
-
-  const source = raw as Partial<ClientInfo>;
-  return {
-    name: typeof source.name === "string" ? source.name : fallback.name,
-    address: typeof source.address === "string" ? source.address : fallback.address,
-    email: typeof source.email === "string" ? source.email : fallback.email,
-    date: typeof source.date === "string" ? source.date : fallback.date,
-    dueDate: typeof source.dueDate === "string" ? source.dueDate : fallback.dueDate
-  };
-}
-
-function normalizeItems(raw: unknown, fallback: InvoiceItem[]): InvoiceItem[] {
-  if (!Array.isArray(raw)) {
-    return [...fallback];
-  }
-
-  const normalized = raw
-    .map((entry) => {
-      if (!entry || typeof entry !== "object") {
-        return null;
-      }
-      const partial = entry as Partial<InvoiceItem>;
-      return {
-        id: typeof partial.id === "string" && partial.id.trim() ? partial.id : createItem().id,
-        description: typeof partial.description === "string" ? partial.description : "",
-        quantity:
-          typeof partial.quantity === "number" && partial.quantity >= 0 ? partial.quantity : 1,
-        rate: typeof partial.rate === "number" && partial.rate >= 0 ? partial.rate : 0
-      };
-    })
-    .filter(Boolean) as InvoiceItem[];
-
-  return normalized.length > 0 ? normalized : [...fallback];
-}
-
-function toPositiveNumber(value: string, fallback: number) {
-  const numeric = Number.parseFloat(value);
-  if (!Number.isFinite(numeric) || numeric < 0) {
-    return fallback;
-  }
-  return numeric;
 }
 
 function formatLines(

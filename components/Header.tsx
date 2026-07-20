@@ -71,7 +71,9 @@ export function Header() {
                 <div className={styles.tooltipTop}>
                   <span className={styles.tooltipBadge}>Free tool</span>
                   <p className={styles.tooltipSubtitle}>Best used on tablets or laptops for the smoothest experience.</p>
-                  <p className={styles.tooltipSubtitle}>Use it as much as you like, no data is retained.</p>
+                  <p className={styles.tooltipSubtitle}>
+                    Your draft stays in this browser and is never sent to our servers. Reset removes it.
+                  </p>
                 </div>
                 <div className={styles.tooltipDivider} aria-hidden="true" />
                 <p className={styles.tooltipTitle}>How to use</p>

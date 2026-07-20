@@ -451,3 +451,49 @@
     width: 100%;
   }
 }
+
+@media (max-width: 560px) {
+  .wrapper {
+    width: min(100% - 1.5rem, 940px);
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .modeToggle {
+    align-items: flex-start;
+    flex-direction: column;
+    border-radius: 0.6rem;
+  }
+
+  .currencySelector {
+    margin: 0;
+  }
+
+  .selectWrapper,
+  .select {
+    width: 100%;
+  }
+
+  .card {
+    padding: 1.5rem 1rem;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .tableRow {
+    grid-template-columns: 1fr;
+  }
+
+  .numberCell {
+    justify-content: flex-start;
+  }
+
+  .numberInput {
+    max-width: none;
+  }
+}
