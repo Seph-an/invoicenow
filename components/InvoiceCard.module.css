@@ -1,0 +1,453 @@
+.wrapper {
+  position: relative;
+  width: min(940px, 90vw);
+  margin: 0 auto;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.modeGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.toolTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111c36;
+  margin: 0;
+}
+
+.modeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(241, 245, 255, 0.6);
+  border: 1px solid rgba(17, 28, 54, 0.08);
+}
+
+.modeOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(17, 28, 54, 0.65);
+  cursor: pointer;
+}
+
+.modeOption input {
+  margin: 0;
+  accent-color: #4c5aa0;
+}
+
+.modeOption input:checked + span {
+  color: #111c36;
+}
+
+.currencySelector {
+  position: relative;
+}
+
+.selectWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(17, 28, 54, 0.12);
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.3rem 0.5rem;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+  transition: box-shadow 0.2s ease;
+}
+
+.selectWrapper:hover {
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.12);
+}
+
+.selectWrapper::after {
+  content: "";
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid rgba(17, 28, 54, 0.5);
+  border-bottom: 2px solid rgba(17, 28, 54, 0.5);
+  transform: translateY(-50%) rotate(45deg);
+  pointer-events: none;
+}
+
+.select {
+  appearance: none;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a2542;
+  background: transparent;
+  padding: 0.45rem 2rem 0.45rem 0.4rem;
+  outline: none;
+  border-radius: 0.4rem;
+}
+
+.select:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+.card {
+  border-radius: 1rem;
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    #fbfdff;
+  background-size: 52px 52px, 52px 52px;
+  padding: 3.5rem clamp(2.5rem, 5vw, 4.5rem);
+  box-shadow:
+    0 45px 85px rgba(13, 24, 47, 0.12),
+    0 18px 24px rgba(13, 24, 47, 0.08);
+  display: grid;
+  gap: 2.5rem;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.logoPreview {
+  border-radius: 0.5rem;
+  width: 7.5rem;
+  height: 7.5rem;
+  display: grid;
+  place-items: center;
+  color: rgba(15, 23, 42, 0.45);
+  font-weight: 500;
+  background: rgba(241, 245, 255, 0.26);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border: 1.5px dashed rgba(15, 23, 42, 0.14);
+}
+
+.logoPreview:hover,
+.logoPreview:focus-visible {
+  border-color: rgba(76, 90, 160, 0.6);
+  box-shadow: 0 0 0 3px rgba(76, 90, 160, 0.15);
+}
+
+.logoPreview span {
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+.logoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logoButton {
+  border: none;
+  background: #f1f5ff;
+  color: #1f2f5d;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logoButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(31, 47, 93, 0.15);
+}
+
+.logoButtonSecondary {
+  border: none;
+  background: transparent;
+  color: rgba(15, 23, 42, 0.55);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35rem 0.6rem;
+}
+
+.logoButtonSecondary:hover,
+.logoButtonSecondary:focus-visible {
+  color: rgba(211, 59, 64, 0.9);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: #111c36;
+}
+
+.heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  margin: 0;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: rgba(17, 28, 54, 0.65);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid rgba(17, 28, 54, 0.12);
+  border-radius: 0.4rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(17, 28, 54, 0.82);
+  background: rgba(255, 255, 255, 0.92);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: rgba(76, 90, 160, 0.5);
+  box-shadow: 0 0 0 3px rgba(76, 90, 160, 0.18);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 2.6rem;
+}
+
+.numberInput {
+  text-align: center;
+  max-width: 100px;
+}
+
+.inlineFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.5rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.notesGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.linkButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4c5aa0;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.linkButton:hover,
+.linkButton:focus-visible {
+  text-decoration: underline;
+}
+
+.lineItems {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(17, 28, 54, 0.45);
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.6rem;
+  box-shadow: inset 0 0 0 1px rgba(17, 28, 54, 0.08);
+  background: rgba(248, 249, 254, 0.8);
+}
+
+.descriptionCell textarea {
+  width: 100%;
+}
+
+.numberCell {
+  justify-self: stretch;
+  display: flex;
+  justify-content: center;
+}
+
+.amountCell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: rgba(17, 28, 54, 0.85);
+  gap: 0.75rem;
+}
+
+.removeButton {
+  border: none;
+  background: none;
+  color: #d33b40;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.removeButton:hover:not(:disabled) {
+  transform: scale(1.1);
+  color: #ef4444;
+}
+
+.removeButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.addItem {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  background: linear-gradient(180deg, #f0f4ff, #e2e9fb);
+  box-shadow: 0 12px 18px rgba(31, 47, 93, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.addItem span:first-child {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: #1f2f5d;
+  color: #fff;
+  line-height: 1.25rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.addItem:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 22px rgba(31, 47, 93, 0.2);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.totals {
+  margin-left: auto;
+  display: grid;
+  gap: 1rem;
+  width: min(320px, 100%);
+  font-size: 0.95rem;
+  color: rgba(17, 28, 54, 0.75);
+}
+
+.inlineJustify {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.amount {
+  justify-self: flex-end;
+}
+
+.totalDivider {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(17, 28, 54, 0.15), rgba(17, 28, 54, 0.4));
+  border-radius: 999px;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.grandTotal {
+  font-size: 1.15rem;
+  color: #0e1a32;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding-top: 2.5rem;
+  }
+
+  .currencySelector {
+    position: static;
+    transform: none;
+    margin-left: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .card {
+    padding: 2.5rem clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: minmax(160px, 1fr) repeat(2, minmax(60px, 90px)) 1fr;
+  }
+
+  .totals {
+    width: 100%;
+  }
+}
