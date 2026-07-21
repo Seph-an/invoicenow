@@ -1,5 +1,6 @@
 import { FeedbackButton } from "@/components/FeedbackButton";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ReactNode } from "react";
 import "./globals.css";
 
@@ -93,6 +94,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         {children}
         <FeedbackButton />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-SHM1Y0QXEL"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-SHM1Y0QXEL');
+          `}
+        </Script>
       </body>
     </html>
   );
