@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">InvoiceNow instant invoice generator</title>
+  <desc id="description">Create professional invoices, preview them instantly, and download ready-to-send PDFs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1429"/><stop offset="1" stop-color="#172b55"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#67e8f9"/><stop offset="1" stop-color="#6366f1"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dy="24" stdDeviation="24" flood-color="#020617" flood-opacity=".34"/></filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1050" cy="-30" r="330" fill="#3b82f6" opacity=".12"/>
+  <circle cx="70" cy="630" r="310" fill="#22d3ee" opacity=".08"/>
+  <path d="M0 510C235 430 380 590 610 506s366-68 590 14v110H0Z" fill="#eaf1fb" opacity=".06"/>
+  <g transform="translate(78 74)">
+    <rect width="64" height="64" rx="16" fill="url(#accent)"/>
+    <path d="M20 17h24v30H20z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M26 26h12M26 34h12M26 42h8" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <text x="84" y="44" fill="#f8fbff" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="700" letter-spacing="3">INVOICENOW</text>
+  </g>
+  <g transform="translate(78 203)">
+    <text fill="#f8fbff" font-family="Arial,Helvetica,sans-serif" font-size="64" font-weight="700">
+      <tspan x="0" y="0">Professional invoices.</tspan><tspan x="0" y="76">Ready in seconds.</tspan>
+    </text>
+    <text x="2" y="146" fill="#cbd5e1" font-family="Arial,Helvetica,sans-serif" font-size="27">Create, preview, and download polished PDFs for free.</text>
+    <g transform="translate(2 190)"><rect width="238" height="54" rx="27" fill="url(#accent)"/><text x="119" y="35" fill="#fff" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700">invoicenow.co.ke</text></g>
+  </g>
+  <g transform="translate(820 113) rotate(3 137 202)" filter="url(#shadow)">
+    <rect width="274" height="404" rx="18" fill="#fff"/>
+    <rect x="28" y="30" width="82" height="18" rx="5" fill="#111c36"/><text x="246" y="45" text-anchor="end" fill="#111c36" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="700">INVOICE</text>
+    <rect x="28" y="77" width="92" height="8" rx="4" fill="#94a3b8"/><rect x="28" y="94" width="132" height="7" rx="3.5" fill="#cbd5e1"/>
+    <rect x="177" y="77" width="69" height="8" rx="4" fill="#94a3b8"/><rect x="193" y="94" width="53" height="7" rx="3.5" fill="#cbd5e1"/>
+    <rect x="28" y="139" width="218" height="30" rx="6" fill="#eaf1fb"/>
+    <g fill="#cbd5e1"><rect x="28" y="181" width="135" height="7" rx="3.5"/><rect x="205" y="181" width="41" height="7" rx="3.5"/><rect x="28" y="204" width="119" height="7" rx="3.5"/><rect x="205" y="204" width="41" height="7" rx="3.5"/><rect x="28" y="227" width="128" height="7" rx="3.5"/><rect x="205" y="227" width="41" height="7" rx="3.5"/></g>
+    <path d="M28 258h218" stroke="#dbe4f0" stroke-width="2"/><text x="169" y="286" fill="#64748b" font-family="Arial,Helvetica,sans-serif" font-size="11">TOTAL</text><text x="246" y="287" text-anchor="end" fill="#111c36" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700">$2,450</text>
+    <rect x="28" y="326" width="116" height="10" rx="5" fill="#6366f1"/><rect x="28" y="346" width="170" height="7" rx="3.5" fill="#cbd5e1"/>
+    <circle cx="229" cy="356" r="17" fill="#22c55e"/><path d="m220 356 6 6 12-14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
