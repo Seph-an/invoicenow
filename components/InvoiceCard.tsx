@@ -45,6 +45,7 @@ const STORAGE_KEY = "invoice-card-state";
 const RESET_EVENT_NAME = "invoice-card:reset";
 const DOWNLOAD_EVENT_NAME = "invoice-card:download";
 const PREVIEW_EVENT_NAME = "invoice-card:preview";
+const DOWNLOAD_AVAILABILITY_EVENT_NAME = "invoice-card:download-availability";
 
 const documentTypeOptions: { value: DocumentType; label: string }[] = [
   { value: "invoice", label: "Generate invoice" },
@@ -254,8 +255,18 @@ export function InvoiceCard() {
     [currency, discountEnabled, discountPercent, items, taxPercent]
   );
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    window.dispatchEvent(
+      new CustomEvent(DOWNLOAD_AVAILABILITY_EVENT_NAME, {
+        detail: { canDownload: hasLoaded && total > 0 }
+      })
+    );
+  }, [hasLoaded, total]);
+
   const handleDownload = useCallback(async (mode: "download" | "preview" = "download") => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || (mode === "download" && total <= 0)) {
       return;
     }
 

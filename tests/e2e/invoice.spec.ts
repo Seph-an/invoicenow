@@ -3,12 +3,15 @@ import { expect, test } from "@playwright/test";
 test("creates, persists, downloads, and resets a quotation", async ({ page }) => {
   await page.goto("/", { waitUntil: "networkidle" });
 
+  await expect(page.getByRole("button", { name: "Download" })).toBeDisabled();
+
   await page.getByLabel("Generate quotation").check();
   await expect(page.getByLabel("Quotation number")).toHaveValue("QTN-0001");
   await page.getByLabel("Company name").fill("Acme Africa");
   await page.getByLabel("Item description").fill("Consulting");
   await page.getByLabel("Quantity").fill("3");
   await page.getByRole("spinbutton", { name: "Rate", exact: true }).fill("19.99");
+  await expect(page.getByRole("button", { name: "Download" })).toBeEnabled();
   await page.getByRole("button", { name: "Add discount" }).click();
   await page.getByLabel("Discount (%)").fill("10");
   await page.getByLabel("Tax (%)").fill("16");

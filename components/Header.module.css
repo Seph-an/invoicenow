@@ -42,8 +42,13 @@
   cursor: pointer;
 }
 
-.actionButton:hover {
+.actionButton:hover:not(:disabled) {
   color: #60a5fa;
+}
+
+.actionButton:disabled {
+  color: rgba(248, 250, 252, 0.4);
+  cursor: not-allowed;
 }
 
 .actionButton:focus-visible {

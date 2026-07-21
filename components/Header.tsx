@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import styles from "./Header.module.css";
 
 const RESET_EVENT_NAME = "invoice-card:reset";
 const DOWNLOAD_EVENT_NAME = "invoice-card:download";
 const PREVIEW_EVENT_NAME = "invoice-card:preview";
+const DOWNLOAD_AVAILABILITY_EVENT_NAME = "invoice-card:download-availability";
 
 const actions = [
   { label: "How it works", variant: "default" as const },
@@ -22,6 +24,19 @@ const howToSteps = [
 ] as const;
 
 export function Header() {
+  const [canDownload, setCanDownload] = useState(false);
+
+  useEffect(() => {
+    const handleDownloadAvailability = (event: Event) => {
+      setCanDownload(Boolean((event as CustomEvent<{ canDownload?: boolean }>).detail?.canDownload));
+    };
+
+    window.addEventListener(DOWNLOAD_AVAILABILITY_EVENT_NAME, handleDownloadAvailability);
+    return () => {
+      window.removeEventListener(DOWNLOAD_AVAILABILITY_EVENT_NAME, handleDownloadAvailability);
+    };
+  }, []);
+
   const handleActionClick = (label: string) => {
     if (label === "Reset") {
       if (typeof window !== "undefined") {
@@ -52,6 +67,7 @@ export function Header() {
                 type="button"
                 className={`${styles.actionButton} ${styles[action.variant]}`}
                 onClick={() => handleActionClick(action.label)}
+                disabled={action.label === "Download" && !canDownload}
               >
                 {action.label}
               </button>
