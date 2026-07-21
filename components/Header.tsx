@@ -16,7 +16,7 @@ const actions = [
 ];
 
 const howToSteps = [
-  "Choose the document type you need.",
+  "Choose invoice or quotation",
   "Select the currency you are working with.",
   "Fill in the details, logo, and notes (as needed).",
   "Click “Preview” (optional) to review before downloading.",
