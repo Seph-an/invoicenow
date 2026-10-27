@@ -7,7 +7,7 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "InvoiceNow",
-  url: "https://invoicenow.co.ke",
+  url: "https://invoice.sephanly.com",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   description:

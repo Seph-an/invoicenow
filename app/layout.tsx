@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ReactNode } from "react";
 import "./globals.css";
 
-const siteUrl = "https://invoicenow.co.ke";
+const siteUrl = "https://invoice.sephanly.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
